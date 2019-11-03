@@ -23,7 +23,8 @@
     ],
     "interface-name": false,
     "no-string-literal": false,
-    "variable-name": false
+    "variable-name": false,
+    "max-classes-per-file": false
   },
   "rulesDirectory": []
 }

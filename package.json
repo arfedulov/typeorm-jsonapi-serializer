@@ -34,8 +34,7 @@
     "test": "jest --passWithNoTests",
     "check": "tsc --noEmit",
     "prebuild": "rm -rf dist && yarn test",
-    "build": "npx tsc --declaration && yarn run removeBuildTests",
-    "removeBuildTests": "rm -rf dist/__tests__ dist/**/__tests__ dist/**/**/__tests__",
+    "build": "npx tsc -p tsconfig.build.json --declaration",
     "prepublish": "yarn build"
   }
 }
