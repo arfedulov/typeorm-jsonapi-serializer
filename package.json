@@ -1,0 +1,38 @@
+{
+  "name": "typeorm-jsonapi-serializer",
+  "version": "0.1.0",
+  "main": "dist/index.js",
+  "author": {
+    "name": "Artem Fedulov",
+    "email": "arfedulov@gmail.com"
+  },
+  "license": "MIT",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arfedulov/typeorm-jsonapi-serializer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/arfedulov/typeorm-jsonapi-serializer/issues",
+    "email": "arfedulov@gmail.com"
+  },
+  "dependencies": {
+    "@types/jest": "^24",
+    "@types/node": "^12",
+    "jest": "^24",
+    "reflect-metadata": "^0.1.13",
+    "ts-jest": "^24",
+    "ts-node": "^8",
+    "tslint": "^5",
+    "typeorm": "^0.2.20",
+    "typescript": "^3"
+  },
+  "scripts": {
+    "test": "jest --passWithNoTests",
+    "check": "tsc --noEmit",
+    "prebuild": "rm -rf dist && yarn test",
+    "build": "npx tsc --declaration && yarn run removeBuildTests",
+    "removeBuildTests": "rm -rf dist/__tests__ dist/**/__tests__ dist/**/**/__tests__",
+    "prepublish": "yarn build"
+  }
+}
