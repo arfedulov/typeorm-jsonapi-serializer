@@ -1,5 +1,3 @@
-import 'reflect-metadata';
-
 import { SERIALIZABLE_META_KEY } from './Serializable';
 
 const getSymbolName = (s: symbol) => {

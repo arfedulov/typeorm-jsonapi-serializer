@@ -1,6 +1,5 @@
 import { Class } from 'type-fest';
 import { MetadataStorage } from '../MetadataStorage';
-import 'reflect-metadata';
 import uniq from 'lodash/uniq';
 
 export interface SerializableParams {
