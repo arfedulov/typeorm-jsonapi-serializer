@@ -23,7 +23,8 @@ export const Serializer = (params?: SerializerParams) => async (entity: EntityIn
   const meta = Reflect.getMetadata(SERIALIZABLE_META_KEY, entity.constructor) as SerializableMetaData;
   assert(meta, 'Entity should be serializable and serializable intities must have metadata');
   const metaStorage = getMetadataArgsStorage();
-  const rels = metaStorage.relations.filter((rel) => equal(rel.target, entity.constructor));
+  assert((entity as any).constructor, 'Entity instance has "constructor" property');
+  const rels = metaStorage.relations.filter((rel) => equal(rel.target, (entity as any).constructor));
   const options = {
     relationshipsTypes: {} as any,
     exclude: [] as string[],
