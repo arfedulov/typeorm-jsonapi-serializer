@@ -1,6 +1,9 @@
 import assert from 'assert';
+import { Entity, PrimaryGeneratedColumn } from 'typeorm';
+import 'reflect-metadata';
 
 import { MetadataStorage, __dropStorage } from '../MetadataStorage';
+import { SERIALIZABLE_META_KEY} from '../decorators/Serializable';
 
 beforeEach(() => {
   __dropStorage();
@@ -91,4 +94,20 @@ test('removeEntityConstructor(): remove constructor by name', () => {
 
   const actualAfterRemove = storage.getEntityConstructors();
   assert.deepStrictEqual(actualAfterRemove, EXPECT);
+});
+
+test('getEntityCtorByResourceType(): return constructor by resource type', () => {
+  class A {}
+  class B {}
+  class C {}
+  Reflect.defineMetadata(SERIALIZABLE_META_KEY, { resourceType: 'typeA' }, A);
+  Reflect.defineMetadata(SERIALIZABLE_META_KEY, { resourceType: 'typeB' }, B);
+  Reflect.defineMetadata(SERIALIZABLE_META_KEY, { resourceType: 'typeC' }, C);
+
+  [A, B, C].forEach((ctor) => MetadataStorage.getStorage().addEntityConstructor(ctor));
+
+  const EXPECT = B;
+  const actual = MetadataStorage.getStorage().getEntityCtorByResourceType('typeB');
+
+  assert.strictEqual(actual, EXPECT);
 });

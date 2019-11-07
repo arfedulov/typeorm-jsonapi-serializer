@@ -1,5 +1,8 @@
 import { Class } from 'type-fest';
 import remove from 'lodash/remove';
+import { getMetadataArgsStorage } from 'typeorm';
+
+import { SERIALIZABLE_META_KEY, SerializableMetaData } from './decorators/Serializable';
 
 const STORAGE_KEY = Symbol('globalMetadataStorage');
 
@@ -20,7 +23,7 @@ export class MetadataStorage {
   }
 
   addEntityConstructor = (ctor: Class) => {
-    if (this.entityConstructors.indexOf(ctor) === -1) {
+    if (!this.entityConstructors.includes(ctor)) {
       this.entityConstructors.push(ctor);
     }
   }
@@ -32,6 +35,17 @@ export class MetadataStorage {
 
   getEntityConstructors = () => {
     return [ ...this.entityConstructors ];
+  }
+
+  getEntityCtorByResourceType = (resourceType: string) => {
+    const ctor = this.entityConstructors.find((constructor) => {
+      const meta = Reflect.getMetadata(SERIALIZABLE_META_KEY, constructor) as SerializableMetaData;
+      return meta && meta.resourceType === resourceType;
+    });
+    if (!ctor) {
+      throw new Error(`Entity with resource type ${ resourceType } does not exist.`);
+    }
+    return ctor;
   }
 }
 
