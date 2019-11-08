@@ -2,6 +2,8 @@ import { Class } from 'type-fest';
 import { MetadataStorage } from '../MetadataStorage';
 import uniq from 'lodash/uniq';
 
+import { LinkingEntityIdFields } from '../Deserializer/deserializeEntity';
+
 export interface SerializableParams {
   skip?: string[];
 }
@@ -9,6 +11,7 @@ export interface SerializableParams {
 export interface SerializableMetaData {
   resourceType: string;
   skip?: string[];
+  linkingEntityIdFields?: LinkingEntityIdFields;
 }
 
 export const SERIALIZABLE_META_KEY = Symbol('custom:serializable');

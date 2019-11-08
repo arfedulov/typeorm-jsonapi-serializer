@@ -5,6 +5,7 @@ import { SERIALIZABLE_META_KEY, SerializableMetaData } from '../decorators/Seria
 import { MetadataStorage } from '../MetadataStorage';
 import { serializeEntity } from './serializeEntity';
 import { Constructor, EntityInstance } from '../types';
+import { getRelationConstructors } from '../lib/getRelationConstructors';
 
 export interface SerializerParams {
   /** Keys to include into jsonapi "included" object. */
@@ -22,9 +23,6 @@ const equal = (a: any, b: Constructor) => {
 export const Serializer = (params?: SerializerParams) => async (entity: EntityInstance) => {
   const meta = Reflect.getMetadata(SERIALIZABLE_META_KEY, entity.constructor) as SerializableMetaData;
   assert(meta, 'Entity should be serializable and serializable intities must have metadata');
-  const metaStorage = getMetadataArgsStorage();
-  assert((entity as any).constructor, 'Entity instance has "constructor" property');
-  const rels = metaStorage.relations.filter((rel) => equal(rel.target, (entity as any).constructor));
   const options = {
     relationshipsTypes: {} as any,
     exclude: [] as string[],
@@ -32,22 +30,14 @@ export const Serializer = (params?: SerializerParams) => async (entity: EntityIn
   (meta.skip || []).forEach((skipKey) => {
     options.exclude.push(skipKey);
   });
-  rels.forEach((rel) => {
-    const type: string | Constructor = typeof rel.type === 'string' ? rel.type : rel.type();
-    let relConstructor;
-    if (typeof type === 'string') {
-      relConstructor = MetadataStorage.getStorage().getEntityConstructors().find((ctor) => {
-        return ctor.name === type;
-      }) as Constructor;
-    } else {
-      relConstructor = type;
-    }
+  const relCtors = Object.entries(getRelationConstructors({ entityConstructor: entity.constructor as any }));
+  relCtors.forEach(([propertyName, relConstructor]) => {
     const relMeta = Reflect.getMetadata(SERIALIZABLE_META_KEY, relConstructor) as SerializableMetaData;
     if (!relMeta) {
       // means relationsip is not serializable
-      options.exclude.push(rel.propertyName);
+      options.exclude.push(propertyName);
     } else {
-      options.relationshipsTypes[rel.propertyName] = relMeta.resourceType;
+      options.relationshipsTypes[propertyName] = relMeta.resourceType;
     }
   });
   return serializeEntity(meta.resourceType, entity, options);

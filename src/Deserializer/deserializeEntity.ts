@@ -3,15 +3,25 @@ import lodash from 'lodash';
 
 import { Constructor } from '../types';
 
+/**
+ * From and to foreign key names in linking entity.
+ *
+ * @example { subscribers: { from: 'userId', to: 'subscriberId' } }
+ */
+export interface LinkingEntityIdFields {
+  [key: string]: { from: string, to: string };
+}
+
+export interface MetaInfo {
+  ctorResourceType: string;
+  relationshipsResourceTypes: { [key: string]: string };
+}
+
 export interface DeserializerOptions {
   /** Map ORM porperty names to entity constructors. */
   relationEntityConstructors: { [key: string]: Constructor };
-  /**
-   * From and to foreign key names in linking entity.
-   *
-   * @example { subscribers: { from: 'userId', to: 'subscriberId' } }
-   */
-  linkingEntityIdFields: { [key: string]: { from: string, to: string } };
+  linkingEntityIdFields: LinkingEntityIdFields;
+  metaInfo: MetaInfo;
 }
 
 /** Safely convert string id to number or leave as is ( in case it is uuid ). */
@@ -26,10 +36,16 @@ export const deserializeEntity = (
   const {
     relationEntityConstructors,
     linkingEntityIdFields,
+    metaInfo,
   } = options;
+  if (data.type !== metaInfo.ctorResourceType) {
+    throw new Error('Resource type doesn\'t match the one defined in entity');
+  }
   const { id, attributes, relationships } = data;
   const entity = new entityConstructor();
-  entity.id = toEntityId(id!);
+  if (id) {
+    entity.id = toEntityId(id!);
+  }
   if (attributes) {
     Object.keys(attributes).forEach((key) => {
       entity[key] = attributes[key];
@@ -48,6 +64,11 @@ export const deserializeEntity = (
             obj[from] = entity.id;
             obj[to] = resource.id;
           } else {
+            if (resource.type !== metaInfo.relationshipsResourceTypes[key]) {
+              throw new Error(
+                `Relationship resource type doesn\'t match the one defined in entity (${ resource.type } !== ${ metaInfo.relationshipsResourceTypes[key] })`
+              );
+            }
             obj.id = resource.id;
           }
           return obj;
