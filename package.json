@@ -6,6 +6,7 @@
     "name": "Artem Fedulov",
     "email": "arfedulov@gmail.com"
   },
+  "description": "Provides (de)serialization of jsonapi data for typeorm",
   "license": "MIT",
   "private": true,
   "repository": {
