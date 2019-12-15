@@ -4,7 +4,8 @@ import { getRelationConstructors, RelationConstructors } from '../lib/getRelatio
 import { MetadataStorage } from '../MetadataStorage';
 import { logger } from '../logger';
 import { deserializeEntity } from './deserializeEntity';
-import { SERIALIZABLE_META_KEY, SerializableMetaData } from '../decorators/Serializable';
+import { SERIALIZABLE_META_KEY } from '../decorators/Serializable';
+import { MetaData } from '../MetaData';
 
 const validJsonapiResourceObject = (data: JSONAPI.ResourceObject) => {
   return data.type && typeof data.type === 'string';
@@ -21,7 +22,7 @@ export const Deserializer = (params?: any) => (data: JSONAPI.ResourceObject) => 
   const ctor = MetadataStorage.getStorage().getEntityCtorByResourceType(data.type);
   let relCtors: RelationConstructors = {};
   let linkingEntityIdFields = {};
-  const meta = Reflect.getMetadata(SERIALIZABLE_META_KEY, ctor) as SerializableMetaData;
+  const meta: MetaData = Reflect.getMetadata(SERIALIZABLE_META_KEY, ctor);
   if (data.relationships) {
     relCtors = getRelationConstructors({ resourceType: data.type });
     Object.keys(data.relationships).forEach((key) => {
@@ -39,7 +40,7 @@ export const Deserializer = (params?: any) => (data: JSONAPI.ResourceObject) => 
     metaInfo: {
       ctorResourceType: meta.resourceType,
       relationshipsResourceTypes: Object.entries(relCtors).reduce((acc, [ key, relCtor ]) => {
-        const relMeta = Reflect.getMetadata(SERIALIZABLE_META_KEY, relCtor) as SerializableMetaData;
+        const relMeta: MetaData = Reflect.getMetadata(SERIALIZABLE_META_KEY, relCtor);
         if (relMeta) {
           return { ...acc, [key]: relMeta.resourceType };
         }

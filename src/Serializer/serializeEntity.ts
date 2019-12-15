@@ -1,6 +1,6 @@
 import * as JSONAPI from 'jsonapi-typescript';
 
-import { Constructor, EntityInstance } from '../types';
+import { EntityInstance } from '../types';
 
 const getAttributes = (entity: EntityInstance, relationships: string[]) => {
   return Object.keys(entity).filter((key) => {
