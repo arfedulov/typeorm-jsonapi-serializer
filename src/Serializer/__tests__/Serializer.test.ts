@@ -38,7 +38,7 @@ test('Serializer()(): call serializeEntity() with correct arguments', async () =
     name = 'bear';
 
     @Column()
-    @Skip
+    @Skip()
     secretName: string;
 
     @ManyToOne((type) => Zoo, (zoo) => zoo.animals)

@@ -2,9 +2,10 @@ import assert from 'assert';
 import 'reflect-metadata';
 
 import { Serializable, SERIALIZABLE_META_KEY } from '../Serializable';
+import { MetaData } from '../../MetaData';
 
 test('@Serializable: set "resourceType"', () => {
-  const EXPECT = {
+  const EXPECT: MetaData = {
     resourceType: 'animals',
   };
 
@@ -16,13 +17,15 @@ test('@Serializable: set "resourceType"', () => {
   assert.deepStrictEqual(actual, EXPECT);
 });
 
-test('@Serializable: set "resourceType" and "skip"', () => {
-  const EXPECT = {
+test('@Serializable: set "resourceType" and "skipSerialization" and "skipDeserialization"', () => {
+  const SKIP_FIELDS = [ 'a', 'b', 'c' ];
+  const EXPECT: MetaData = {
     resourceType: 'animals',
-    skip: [ 'a', 'b', 'c' ],
+    skipSerialization: SKIP_FIELDS,
+    skipDeserialization: SKIP_FIELDS,
   };
 
-  @Serializable(EXPECT.resourceType, { skip: EXPECT.skip })
+  @Serializable(EXPECT.resourceType, { skip: SKIP_FIELDS })
   class Animal {}
 
   const actual = Reflect.getMetadata(SERIALIZABLE_META_KEY, Animal);
