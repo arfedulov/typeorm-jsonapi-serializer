@@ -107,3 +107,27 @@ test('deserialize entity with to-many relationships', () => {
 
   assert.deepStrictEqual(actual, EXPECT);
 });
+
+test('deserialize relationship', () => {
+  const INPUT: JSONAPI.ResourceLinkage = {
+    type: 'cities',
+    id: '0',
+  };
+
+  const resourceObj = new User();
+  const city = new City();
+  city.id = 0;
+
+  const EXPECT = new User();
+  EXPECT.city = Promise.resolve(city);
+
+  const actual = Deserializer()(INPUT, { relationship: {
+    resourceObj,
+    data: INPUT,
+    relationshipName: 'city',
+    relationshipCtor: City,
+    eager: false,
+  } });
+
+  assert.deepStrictEqual(actual, EXPECT);
+});

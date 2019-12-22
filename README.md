@@ -107,3 +107,6 @@ assert.deepStrictEqual(animal, EXPECT);
 /* OK */
 
 ```
+### deserializing relationships
+
+See [Deserializer.test.ts](https://github.com/arfedulov/typeorm-jsonapi-serializer/blob/master/src/Deserializer/__tests__/Deserializer.test.ts) and [deserializeRelation.test.ts](https://github.com/arfedulov/typeorm-jsonapi-serializer/blob/master/src/Deserializer/__tests__/deserializeRelation.test.ts).
