@@ -1,6 +1,6 @@
 {
   "name": "@arfedulov/typeorm-jsonapi-serializer",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "main": "dist/index.js",
   "author": {
     "name": "Artem Fedulov",
