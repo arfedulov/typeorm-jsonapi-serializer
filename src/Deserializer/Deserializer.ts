@@ -6,16 +6,53 @@ import { logger } from '../logger';
 import { deserializeEntity } from './deserializeEntity';
 import { SERIALIZABLE_META_KEY } from '../decorators/Serializable';
 import { MetaData } from '../MetaData';
+import { DeserializeRelationshipParams, deserializeRelationship } from './deserializeRelation';
 
 const validJsonapiResourceObject = (data: JSONAPI.ResourceObject) => {
   return data.type && typeof data.type === 'string';
 };
 
+const validJsonapiLinkageObject = (data: JSONAPI.ResourceLinkage) => {
+  let valid = true;
+  if (data === null) {
+    return valid;
+  }
+  if (Array.isArray(data)) {
+    for (const res of data) {
+      if (!res.id || !res.type) {
+        valid = false;
+        break;
+      }
+    }
+  } else {
+    valid = !!(data.id && data.type);
+  }
+  return valid;
+};
+
+export interface DeserializerOptions {
+  /** If present, deserialize relationship. */
+  relationship?: DeserializeRelationshipParams;
+}
+
 /** Creates deserializer function. */
-export const Deserializer = (params?: any) => (data: JSONAPI.ResourceObject) => {
+export const Deserializer = (params?: any) => (
+  data: JSONAPI.ResourceObject | JSONAPI.ResourceLinkage,
+  options?: DeserializerOptions) =>
+{
   if (data === null) {
     return;
   }
+  if (options && options.relationship) {
+    // deserialize relationship
+    if (!validJsonapiLinkageObject(data as JSONAPI.ResourceLinkage)) {
+      throw new Error('Expect valid jsonapi resource linkage object');
+    }
+    return deserializeRelationship(options.relationship);
+  }
+
+  // deserialize resource object
+  data = data as JSONAPI.ResourceObject;
   if (!validJsonapiResourceObject(data)) {
     throw new Error('Expect valid jsonapi resource object');
   }

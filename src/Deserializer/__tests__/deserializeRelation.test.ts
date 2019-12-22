@@ -38,6 +38,7 @@ test('deserializeRelationship(): deserialize to-one relationship', async () => {
     resourceObj: new Article(55555),
     relationshipCtor: User,
     relationshipName: 'author',
+    eager: true,
   });
 
   assert.deepStrictEqual(actual, EXPECT);
@@ -56,11 +57,12 @@ test('deserializeRelationship(): throw on to-many relationship input', async () 
   ];
 
   try {
-    const actual = await deserializeRelationship({
+    await deserializeRelationship({
       data: INPUT,
       resourceObj: new User(55555),
       relationshipCtor: Article,
       relationshipName: 'articles',
+      eager: true,
     });
 
     throw new AssertionError({ message: 'Expect to throw an Error but it throws nothing' });

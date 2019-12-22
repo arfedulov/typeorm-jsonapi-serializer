@@ -5,14 +5,16 @@ export interface DeserializeRelationshipParams {
   relationshipName: string;
   data: JSONAPI.ResourceLinkage;
   relationshipCtor: any;
+  eager: boolean;
 }
 
-export const deserializeRelationship = async (params: DeserializeRelationshipParams) => {
+export const deserializeRelationship = (params: DeserializeRelationshipParams) => {
   const {
     relationshipName,
     data,
     relationshipCtor,
     resourceObj,
+    eager,
   } = params;
 
   if (!data) {
@@ -26,6 +28,6 @@ export const deserializeRelationship = async (params: DeserializeRelationshipPar
   const rel = new relationshipCtor();
   rel.id = isFinite(+data.id) ? +data.id : data.id;
 
-  (resourceObj as any)[relationshipName] = rel;
+  (resourceObj as any)[relationshipName] = eager ? rel : Promise.resolve(rel);
   return resourceObj;
 };
